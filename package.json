@@ -1,22 +1,8 @@
 {
-  "name": "nad-ui-advanced-language-translator",
-  "version": "1.1.0",
-  "description": "Advanced TS translator with dynamic language creation.",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "ts-node-dev src/index.ts",
-    "test": "jest"
-  },
   "dependencies": {
-    "i18next": "^23.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0",
-    "ts-node-dev": "^2.0.0",
-    "jest": "^29.0.0",
-    "ts-jest": "^29.0.0",
-    "@types/jest": "^29.0.0",
-    "@types/node": "^20.0.0"
+    "i18next": "^23.0.0",
+    "tesseract.js": "^5.0.0",
+    "zod": "^3.22.0",
+    "axios": "^1.6.0" 
   }
 }
