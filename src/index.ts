@@ -1,33 +1,27 @@
-import i18next from 'i18next';
-import { defaultResources } from './components/dictionary';
-import { TranslationSchema } from './types';
+import { SpeechEngine } from './components/speech-engine';
+import { VisionEngine } from './components/vision-engine';
+import { Researcher } from './utils/researcher';
+import NadTranslator from './translator-core'; // Your previous logic
 
-class NadTranslator {
-  constructor() {
-    this.init();
-  }
+class NadUIAdvanced {
+  public speech = new SpeechEngine();
+  public vision = new VisionEngine();
+  public researcher = new Researcher();
+  private translator = new NadTranslator();
 
-  private async init() {
-    await i18next.init({
-      lng: 'en',
-      resources: defaultResources,
-      fallbackLng: 'en'
-    });
-  }
+  // The All-in-One Workflow
+  public async captureTranslateAndResearch(video: HTMLVideoElement, apiKey: string) {
+    // 1. Image to Text
+    const rawText = await this.vision.captureAndProcess(video);
+    
+    // 2. Translate (assuming auto-detect or current language)
+    const translatedText = this.translator.translate(rawText);
 
-  // --- THE NEW FEATURE: CREATE YOUR OWN LANGUAGE ---
-  public addCustomLanguage(code: string, translations: TranslationSchema) {
-    i18next.addResourceBundle(code, 'translation', translations, true, true);
-    console.log(`✨ Custom language "${code}" has been registered!`);
-  }
+    // 3. Research Context
+    const insight = await this.researcher.researchContext(translatedText, apiKey);
 
-  public translate(key: string): string {
-    return i18next.t(key);
-  }
-
-  public async setLanguage(lng: string) {
-    await i18next.changeLanguage(lng);
+    return { translatedText, insight };
   }
 }
 
-export default NadTranslator;
+export default NadUIAdvanced;
