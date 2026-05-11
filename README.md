@@ -9,10 +9,10 @@ A type-safe, high-performance translation engine for modern UIs. Built with **Ty
 
 ## 🚀 Key Features
 
-*   **Dynamic Language Registration**: Create and add new languages at runtime without rebuilding.
-*   **Strict Type Safety**: Full TypeScript support for translation keys and resources.
-*   **Robust Error Handling**: Integrated warning system for missing keys or invalid configurations.
-*   **Automated Testing**: CI/CD ready with GitHub Actions and Jest.
+* **Dynamic Language Registration:** Create and add new languages at runtime without rebuilding.
+* **Strict Type Safety:** Full TypeScript support for translation keys and resources.
+* **Robust Error Handling:** Integrated warning system for missing keys or invalid configurations.
+* **Automated Testing:** CI/CD ready with GitHub Actions and Jest.
 
 ---
 
@@ -29,5 +29,5 @@ translator.addCustomLanguage('fr', {
 });
 
 await translator.setLanguage('fr');
-console.log(translator.translate('welcome')); 
+console.log(translator.translate('welcome'));
 // Output: "Bienvenue sur Nad-UI"
