@@ -1,34 +1,18 @@
 name: CI
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js 20 # Or the version you develop on
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        # The 'cache: npm' line has been intentionally removed here to fix the build
-
-    - name: Run npm install
-      run: npm install
-
-    - name: Run npm run build
-      run: npm run build --if-present
-
-    - name: Run npm test
-      run: npm test
+      - run: npm install
+      - run: npm run build
+      - run: npm test
