@@ -1,9 +1,11 @@
-export interface TranslationSchema {
-  welcome: string;
-  description: string;
-  [key: string]: string; // Allows for custom extra keys
-}
+import { z } from 'zod';
 
-export interface LanguageResource {
-  translation: TranslationSchema;
+// Base schema validation for incoming custom translation dictionaries
+export const ResourceSchema = z.record(z.string(), z.any());
+
+export type TranslationResource = z.infer<typeof ResourceSchema>;
+
+export interface TranslatorOptions {
+  fallbackLng?: string;
+  debug?: boolean;
 }
