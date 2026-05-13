@@ -1,27 +1,69 @@
-import { SpeechEngine } from './components/speech-engine';
-import { VisionEngine } from './components/vision-engine';
-import { Researcher } from './utils/researcher';
-import NadTranslator from './translator-core'; // Your previous logic
+import i18next, { i18n } from 'i18next';
+import { ResourceSchema, TranslationResource, TranslatorOptions } from './types';
+import { TranslationError } from './utils/errors';
 
-class NadUIAdvanced {
-  public speech = new SpeechEngine();
-  public vision = new VisionEngine();
-  public researcher = new Researcher();
-  private translator = new NadTranslator();
+export class NadTranslator {
+  private i18nInstance: i18n;
+  private currentLanguage: string;
 
-  // The All-in-One Workflow
-  public async captureTranslateAndResearch(video: HTMLVideoElement, apiKey: string) {
-    // 1. Image to Text
-    const rawText = await this.vision.captureAndProcess(video);
+  constructor(options: TranslatorOptions = {}) {
+    this.currentLanguage = options.fallbackLng || 'en';
+    this.i18nInstance = i18next.createInstance();
     
-    // 2. Translate (assuming auto-detect or current language)
-    const translatedText = this.translator.translate(rawText);
+    this.i18nInstance.init({
+      lng: this.currentLanguage,
+      fallbackLng: this.currentLanguage,
+      resources: {},
+      returnNull: false,
+      debug: options.debug || false,
+    });
+  }
 
-    // 3. Research Context
-    const insight = await this.researcher.researchContext(translatedText, apiKey);
+  /**
+   * Dynamically registers a custom language dictionary at runtime.
+   * Validates the input structure using Zod schemas.
+   */
+  public addCustomLanguage(lng: string, resources: TranslationResource): void {
+    const validation = ResourceSchema.safeParse(resources);
+    if (!validation.success) {
+      throw new TranslationError(`Invalid translation resource schema provided for language: "${lng}"`);
+    }
 
-    return { translatedText, insight };
+    // Deep merge resources into the default 'translation' namespace
+    this.i18nInstance.addResourceBundle(lng, 'translation', validation.data, true, true);
+  }
+
+  /**
+   * Asynchronously switches the active language context.
+   */
+  public async setLanguage(lng: string): Promise<void> {
+    try {
+      await this.i18nInstance.changeLanguage(lng);
+      this.currentLanguage = lng;
+    } catch (error) {
+      throw new TranslationError(`Failed to set active language to: "${lng}"`);
+    }
+  }
+
+  /**
+   * Resolves a key to its localized string. Logs integrated warnings if missing.
+   */
+  public translate(key: string, interpolationParams?: Record<string, unknown>): string {
+    if (!this.i18nInstance.exists(key)) {
+      console.warn(`[Nad-UI Warning]: Missing translation key "${key}" for locale "${this.currentLanguage}"`);
+    }
+
+    const value = this.i18nInstance.t(key, interpolationParams as any);
+    return typeof value === 'string' ? value : key;
+  }
+
+  /**
+   * Returns the currently active language code.
+   */
+  public getLanguage(): string {
+    return this.currentLanguage;
   }
 }
 
-export default NadUIAdvanced;
+export * from './types';
+export * from './utils/errors';
