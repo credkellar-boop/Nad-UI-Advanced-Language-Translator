@@ -1,21 +1,36 @@
 export class SpeechEngine {
-  private synthesis = window.speechSynthesis;
-  private Recognition = window.SpeechRecognition || (window as any).webkitSpeechRecognition;
+  private synthesis: any;
+  private recognition: any;
 
-  // Speak text in a specific language
-  public speak(text: string, lang: string = 'en-US') {
+  constructor() {
+    // Check if we are in a browser environment
+    if (typeof window !== 'undefined') {
+      this.synthesis = window.speechSynthesis;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        this.recognition = new SpeechRecognition();
+      }
+    }
+  }
+
+  public speak(text: string, lang: string = 'en-US'): void {
+    if (!this.synthesis) {
+      console.warn('Speech synthesis not supported in this environment.');
+      return;
+    }
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = lang;
     this.synthesis.speak(utterance);
   }
 
-  // Record voice and return text
   public async listen(): Promise<string> {
+    if (!this.recognition) {
+      throw new Error('Speech recognition not supported in this environment.');
+    }
     return new Promise((resolve, reject) => {
-      const recognition = new this.Recognition();
-      recognition.onresult = (event: any) => resolve(event.results[0][0].transcript);
-      recognition.onerror = (err: any) => reject(err);
-      recognition.start();
+      this.recognition.onresult = (event: any) => resolve(event.results[0][0].transcript);
+      this.recognition.onerror = (err: any) => reject(err);
+      this.recognition.start();
     });
   }
 }
