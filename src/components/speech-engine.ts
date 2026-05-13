@@ -34,3 +34,12 @@ export class SpeechEngine {
     });
   }
 }
+// Inside SpeechEngine
+public speak(text: string, lang: string = 'en-US'): void {
+    if (!this.synthesis || typeof SpeechSynthesisUtterance === 'undefined') {
+        console.warn('Speech synthesis not supported.');
+        return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    // ...
+}
