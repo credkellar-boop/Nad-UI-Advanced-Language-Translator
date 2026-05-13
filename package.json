@@ -1,15 +1,24 @@
 {
   "name": "nad-ui-advanced-language-translator",
   "version": "1.2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "jest"
+  },
   "dependencies": {
     "i18next": "^23.0.0",
     "tesseract.js": "^5.0.0",
     "axios": "^1.6.0",
     "zod": "^3.22.0"
   },
-  "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
-    "test": "jest"
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0"
   }
 }
